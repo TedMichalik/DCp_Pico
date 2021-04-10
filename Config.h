@@ -3,7 +3,7 @@
 Config.h
 COPYRIGHT (c) 2013-2016 Gregg E. Berman
 
-Part of DCC++ BASE STATION for the Raspberry Pi Pico
+Part of DC+ BASE STATION for the Raspberry Pi Pico
 
 **********************************************************************/
 

@@ -104,10 +104,10 @@ void SerialCommand::parse(char *com){
  */
  //     mRegs->setThrottle(com+1);
       
-      if(sscanf(com+1,"%d %d %d %d",&nReg,&cab,&tSpeed,&tDirection)!=4)
+      if(sscanf(com+1,"%d %d %d %d",&cab,&tSpeed,&tDirection)!=3)
         return;
 
-      if((nReg<1) || (nReg > MAX_THROTTLES))
+      if((cab<1) || (cab > MAX_THROTTLES))
         return;  
 
       if(tSpeed<0) 
@@ -136,11 +136,11 @@ void SerialCommand::parse(char *com){
         tSpeed=0;
       }
       INTERFACE.print("<T");
-      INTERFACE.print(nReg); INTERFACE.print(" ");
+      INTERFACE.print(cab); INTERFACE.print(" ");
       INTERFACE.print(tSpeed); INTERFACE.print(" ");
       INTERFACE.print(tDirection);
       INTERFACE.print(">");
-      mRegs->speedTable[nReg]=tDirection==1?tSpeed:-tSpeed;
+      mRegs->speedTable[cab]=tDirection==1?tSpeed:-tSpeed;
       break;
 
 /***** OPERATE ENGINE DECODER FUNCTIONS F0-F28 ****/    
