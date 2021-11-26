@@ -104,7 +104,7 @@ void SerialCommand::parse(char *com){
  */
  //     mRegs->setThrottle(com+1);
       
-      if(sscanf(com+1,"%d %d %d %d",&cab,&tSpeed,&tDirection)!=3)
+      if(sscanf(com+1,"%d %d %d %d",&nReg,&cab,&tSpeed,&tDirection)!=4)
         return;
 
       if((cab<1) || (cab > MAX_THROTTLES))
@@ -410,31 +410,19 @@ void SerialCommand::parse(char *com){
           INTERFACE.print(" 0>");
         }          
       }
-      INTERFACE.print("<iDC++ BASE STATION FOR RASPBERRY PI ");
+      INTERFACE.print("<iDCC-EX V-");
+      INTERFACE.print(VERSION);
+      INTERFACE.print(" / ");
       INTERFACE.print(ARDUINO_TYPE);
       INTERFACE.print(" / ");
       INTERFACE.print(MOTOR_SHIELD_NAME);
-      INTERFACE.print(": V-");
-      INTERFACE.print(VERSION);
-      INTERFACE.print(" / ");
+      INTERFACE.print(" G-");
       INTERFACE.print(__DATE__);
-      INTERFACE.print(" ");
-      INTERFACE.print(__TIME__);
       INTERFACE.print(">");
 
-      INTERFACE.print("<N");
-      INTERFACE.print(COMM_TYPE);
-      INTERFACE.print(": ");
-
-      #if COMM_TYPE == 0
-        INTERFACE.print("SERIAL>");
-      #elif COMM_TYPE == 1
-        INTERFACE.print(Ethernet.localIP());
-        INTERFACE.print(">");
-      #endif
-      
       Turnout::show();
       Output::show();
+      Sensor::show();
                         
       break;
 
