@@ -76,7 +76,6 @@ the state of any outputs being monitored or controlled by a separate interface o
 #include "DCp_Pico.h"
 #include "EEStore.h"
 #include <EEPROM.h>
-#include "Comm.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 

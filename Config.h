@@ -28,3 +28,13 @@ Part of DC+ BASE STATION for the Raspberry Pi Pico
 //  0 = Built-in Serial Port
 
 #define COMM_INTERFACE   0
+
+// ******** UNLESS YOU WANT ALL CV'S RESET UPON EVERY POWER UP
+// ******** AFTER THE INITIAL DECODER LOAD REMOVE THE "//" IN THE FOOLOWING LINE!!
+//#define DECODER_LOADED
+
+// ******** REMOVE THE "//" IN THE FOOLOWING LINE TO SEND DEBUGGING
+// ******** INFO TO THE SERIAL MONITOR
+#define DEBUG
+
+

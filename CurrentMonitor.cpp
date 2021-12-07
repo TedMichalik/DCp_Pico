@@ -9,7 +9,7 @@ Part of DCC++ BASE STATION for the Raspberry Pi Pico
 
 #include "DCp_Pico.h"
 #include "CurrentMonitor.h"
-#include "Comm.h"
+#include "Config.h"
 
 extern bool track_power;
 

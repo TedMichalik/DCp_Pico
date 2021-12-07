@@ -15,7 +15,6 @@
 #include "Accessories.h"
 #include "EEStore.h"
 #include "Config.h"
-#include "Comm.h"
 
 // DECLARE GLOBAL OBJECTS TO PROCESS AND STORE DCC PACKETS AND MONITOR TRACK CURRENTS.
 // NOTE REGISTER LISTS MUST BE DECLARED WITH "VOLATILE" QUALIFIER TO ENSURE THEY ARE PROPERLY UPDATED BY INTERRUPT ROUTINES
@@ -61,8 +60,10 @@ void setup() {
   Serial.begin(115200);            // configure USB serial interface
   Serial.flush();
 
+#ifdef DEBUG
   Serial1.begin(115200);           // Initialise UART 0
   Serial1.flush();
+#endif
 
   // TRACK A
   analogWrite(ENA, 0);    // Set speed to 0
@@ -81,7 +82,9 @@ void setup() {
 
   SerialCommand::init(&mainRegs, &progRegs, &mainMonitor);   // create structure to read and parse commands from serial line
 
+#ifdef DEBUG
   showConfiguration();
+#endif
 
 } // setup
 

@@ -20,7 +20,7 @@ Part of DCC++ BASE STATION for the Raspberry Pi Pico
 #include "Sensor.h"
 #include "Outputs.h"
 #include "EEStore.h"
-#include "Comm.h"
+#include "Config.h"
 
 int nReg;
 int cab;
@@ -85,7 +85,11 @@ void SerialCommand::process(){
 ///////////////////////////////////////////////////////////////////////////////
 
 void SerialCommand::parse(char *com){
-  
+
+#ifdef DEBUG
+  Serial1.println(com);
+#endif
+
   switch(com[0]){
 
 /***** SET ENGINE THROTTLES USING 128-STEP SPEED CONTROL ****/    
@@ -410,7 +414,7 @@ void SerialCommand::parse(char *com){
           INTERFACE.print(" 0>");
         }          
       }
-      INTERFACE.print("<iDCC-EX V-");
+      INTERFACE.print("<iDC+ V-");
       INTERFACE.print(VERSION);
       INTERFACE.print(" / ");
       INTERFACE.print(ARDUINO_TYPE);

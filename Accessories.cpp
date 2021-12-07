@@ -64,7 +64,7 @@ the directions of any Turnouts being monitored or controlled by a separate inter
 #include "DCp_Pico.h"
 #include "EEStore.h"
 #include <EEPROM.h>
-#include "Comm.h"
+#include "Config.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 

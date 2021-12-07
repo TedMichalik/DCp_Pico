@@ -9,7 +9,7 @@ Part of DCC++ BASE STATION for the Arduino
 
 #include "DCp_Pico.h"
 #include "PacketRegister.h"
-#include "Comm.h"
+#include "Config.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
