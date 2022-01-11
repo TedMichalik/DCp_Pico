@@ -1,10 +1,10 @@
 //  DCp_Pico
 //  Part of DC+ BASE STATION for the Raspberry Pi Pico
+//  Ted Michalik 2022
 //
 //  A dreivative work of
 //  Geoff Bunza 2019  Rev 2.1
 //  COPYRIGHT (c) 2013-2015 Gregg E. Berman
-//  Part of DC+ BASE STATION for the Arduino//
 // DC+ BASE STATION
 
 #include "DCp_Pico.h"

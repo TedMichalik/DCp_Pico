@@ -1,10 +1,11 @@
 /**********************************************************************
-
-DCCpp_Uno.h
-COPYRIGHT (c) 2013-2016 Gregg E. Berman
-
-Part of DCC++ BASE STATION for the Arduino
-
+DCp_Pico.h
+  Part of DC+ BASE STATION for the Raspberry Pi Pico
+  Ted Michalik 2022
+  
+  A derivative work of
+  Geoff Bunza 2019  Rev 2.1
+  COPYRIGHT (c) 2013-2015 Gregg E. Berman
 **********************************************************************/
 
 #include "Config.h"
