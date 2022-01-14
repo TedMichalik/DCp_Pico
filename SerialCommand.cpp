@@ -1,10 +1,12 @@
 /**********************************************************************
-
 SerialCommand.cpp
+  Part of DC+ BASE STATION for the Raspberry Pi Pico
+  Ted Michalik 2022
+  
+  A derivative work of
+  Geoff Bunza 2019  Rev 2.1
+
 COPYRIGHT (c) 2013-2016 Gregg E. Berman
-
-Part of DCC++ BASE STATION for the Raspberry Pi Pico
-
 **********************************************************************/
 
 // DCC++ BASE STATION COMMUNICATES VIA THE SERIAL PORT USING SINGLE-CHARACTER TEXT COMMANDS
@@ -21,28 +23,114 @@ Part of DCC++ BASE STATION for the Raspberry Pi Pico
 #include "Outputs.h"
 #include "EEStore.h"
 #include "Config.h"
+#include <Servo.h>
+
+Servo servo[numfpins];
+#define servo_slowdown  3   //servo loop counter limit
+int servo_slow_counter = 0; //servo loop counter to slowdown servo transit
 
 int nReg;
 int cab;
 int tSpeed;
 int tDirection;
+uint8_t fByte, eByte;
+uint8_t cv;
+uint16_t cv_value;
+uint16_t LastFunctionState;
+uint16_t NewFunctionState;
+uint16_t ChangedFunctionState;
+int Bit_State;
+int speedTable[MAX_THROTTLES] = { };
+int MyCVs[MAX_CV] = { };
+int t;                                    // temp - Rewrite code for FADE function to eliminate this.
 
+// Create Function queue
+QUEUE *ftn_queue = new QUEUE[numfpins];
+  
 extern bool track_power;
+extern byte fpins[numfpins];
 
 ///////////////////////////////////////////////////////////////////////////////
 
 char SerialCommand::commandString[MAX_COMMAND_LENGTH+1];
-volatile RegisterList *SerialCommand::mRegs;
-volatile RegisterList *SerialCommand::pRegs;
 CurrentMonitor *SerialCommand::mMonitor;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void SerialCommand::init(volatile RegisterList *_mRegs, volatile RegisterList *_pRegs, CurrentMonitor *_mMonitor){
-  mRegs=_mRegs;
-  pRegs=_pRegs;
+void SerialCommand::init(CurrentMonitor *_mMonitor){
   mMonitor=_mMonitor;
   sprintf(commandString,"");
+  
+  LastFunctionState = 0; // Last state of Functions F0 thru F15, initialized to all off.
+  
+  // Initialize CVs
+  MyCVs[30] = 2;  //F0 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[31] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[32] = 28;   //  Start Position F0=0
+  MyCVs[33] = 140;  //  End Position   F0=1
+  MyCVs[34] = 28;   //  Current Position
+  MyCVs[35] = 2;  //F1 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[36] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[37] = 28;   //  Start Position Fx=0
+  MyCVs[38] = 140;  //  End Position   Fx=1
+  MyCVs[39] = 28;   //  Current Position
+  MyCVs[40] = 2;  //F2 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[41] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[42] = 28;   //  Start Position Fx=0
+  MyCVs[43] = 140;  //  End Position   Fx=1
+  MyCVs[44] = 28;   //  Current Position
+  MyCVs[45] = 2;  //F3 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[46] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[47] = 28;   //  Start Position Fx=0
+  MyCVs[48] = 140;  //  End Position   Fx=1
+  MyCVs[49] = 28;   //  Current Position
+  MyCVs[50] = 0;  //F4 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[51] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[52] = 28;   //  Start Position Fx=0
+  MyCVs[53] = 140;  //  End Position   Fx=1
+  MyCVs[54] = 28;   //  Current Position
+  MyCVs[55] = 0;  //F5 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[56] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[57] = 28;   //  Start Position Fx=0
+  MyCVs[58] = 140;  //  End Position   Fx=1
+  MyCVs[59] = 28;   //  Current Position
+  MyCVs[60] = 0;  //F6 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[61] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[62] - 28;   //  Start Position Fx=0
+  MyCVs[63] = 140;  //  End Position   Fx=1
+  MyCVs[64] = 28;   //  Current Position
+  MyCVs[65] = 0;  //F7 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[66] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[67] = 28;   //  Start Position Fx=0
+  MyCVs[68] = 140;  //  End Position   Fx=1
+  MyCVs[69] = 28;   //  Current Position
+  MyCVs[70] = 1;  //F8 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[71] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[72] = 1;    //  Start Position Fx=0
+  MyCVs[73] = 20;   //  End Position   Fx=1
+  MyCVs[74] = 1;    //  Current Position
+  MyCVs[75] = 1;  //F9 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[76] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[77] = 1;    //  Start Position Fx=0
+  MyCVs[78] = 20;   //  End Position   Fx=1
+  MyCVs[79] = 1;    //  Current Position
+  MyCVs[80] = 3;  //F10 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[81] = 1;    // Rate  Blink=Eate,PWM=Rate,Servo=Rate
+  MyCVs[82] = 1;    //  Start Position Fx=0
+  MyCVs[83] = 60;   //  End Position   Fx=1
+  MyCVs[84] = 20;   //  Current Position
+  MyCVs[85] = 0;  //F11 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[86] = 1;    // Rate  Blink=Eate,PWM=Rate,Servo=Rate
+  MyCVs[87] = 1;    //  Start Position Fx=0
+  MyCVs[88] = 4;    //  End Position   Fx=1
+  MyCVs[89] = 1;    //  Current Position
+//FUTURE USE
+  MyCVs[90] = 0;  //F12 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[91] = 1;    // Rate  Blink=Eate,PWM=Rate,Servo=Rate
+  MyCVs[92] = 1;    //  Start Position Fx=0
+  MyCVs[93] = 4;    //  End Position   Fx=1
+  MyCVs[94] = 1;    //  Current Position
+
 } // SerialCommand:SerialCommand
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,7 +232,7 @@ void SerialCommand::parse(char *com){
       INTERFACE.print(tSpeed); INTERFACE.print(" ");
       INTERFACE.print(tDirection);
       INTERFACE.print(">");
-      mRegs->speedTable[cab]=tDirection==1?tSpeed:-tSpeed;
+      speedTable[cab]=tDirection==1?tSpeed:-tSpeed;
       break;
 
 /***** OPERATE ENGINE DECODER FUNCTIONS F0-F28 ****/    
@@ -185,6 +273,38 @@ void SerialCommand::parse(char *com){
  * 
  */
 //      mRegs->setFunction(com+1);
+  if(sscanf(com+1,"%d %d %d",&cab,&fByte,&eByte)<2)
+    return;
+
+  NewFunctionState = 0;
+  if((fByte & 0xA0)==0x80){                      // this is a request for functions FL,F1-F4  
+	NewFunctionState = (fByte & 0x10)>>4;		// FL (F0)
+	NewFunctionState = NewFunctionState + (fByte & 0x0F)<<1;	//F1-F4
+  } else {
+	if((fByte & 0xB0)==0xB0){
+	  NewFunctionState = (fByte & 0x0F)<<5;		// this is a request for functions F5-F8
+	} else {
+		if((fByte & 0xB0)==0xA0){
+			NewFunctionState = (fByte & 0x0F)<<9;		// this is a request for functions F9-F12
+		}
+	}
+  }
+    
+  ChangedFunctionState = NewFunctionState ^ LastFunctionState;	// Using XOR to find changes in state
+  LastFunctionState = LastFunctionState ^ ChangedFunctionState;	// Update the last state with those changes.
+  for (int i=0; i < numfpins; i++) {
+	if(ChangedFunctionState>>i & 0x01){
+		Bit_State = NewFunctionState>>i & 0x01;
+#ifdef DEBUG
+	 Serial1.print("F");
+	 Serial1.print(i);
+	 Serial1.print(": Bit_State = ");
+	 Serial1.println(Bit_State);
+#endif
+		exec_function ( i, Bit_State );	// Execute the Function change.
+	}
+  }
+
       break;
       
 /***** OPERATE STATIONARY ACCESSORY DECODERS  ****/    
@@ -277,7 +397,13 @@ void SerialCommand::parse(char *com){
  *    
  *    returns: NONE
 */    
-      mRegs->writeCVByteMain(com+1);
+//      mRegs->writeCVByteMain(com+1);
+  if(sscanf(com+1,"%d %d %d",&cab,&cv,&cv_value)!=3)
+    return;
+
+  if(cv <= MAX_CV){
+	  MyCVs[cv] = cv_value;
+  }
       break;      
 
 /***** WRITE CONFIGURATION VARIABLE BIT TO ENGINE DECODER ON MAIN OPERATIONS TRACK  ****/    
@@ -293,7 +419,7 @@ void SerialCommand::parse(char *com){
  *    
  *    returns: NONE
 */        
-      mRegs->writeCVBitMain(com+1);
+//      mRegs->writeCVBitMain(com+1);
       break;      
 
 /***** WRITE CONFIGURATION VARIABLE BYTE TO ENGINE DECODER ON PROGRAMMING TRACK  ****/    
@@ -310,7 +436,7 @@ void SerialCommand::parse(char *com){
  *    returns: <r CALLBACKNUM|CALLBACKSUB|CV Value)
  *    where VALUE is a number from 0-255 as read from the requested CV, or -1 if verificaiton read fails
 */    
-      pRegs->writeCVByte(com+1);
+//      pRegs->writeCVByte(com+1);
       break;      
 
 /***** WRITE CONFIGURATION VARIABLE BIT TO ENGINE DECODER ON PROGRAMMING TRACK  ****/    
@@ -344,7 +470,7 @@ void SerialCommand::parse(char *com){
  *    returns: <r CALLBACKNUM|CALLBACKSUB|CV VALUE)
  *    where VALUE is a number from 0-255 as read from the requested CV, or -1 if read could not be verified
 */    
-      pRegs->readCV(com+1);
+//      pRegs->readCV(com+1);
       break;
 
 /***** TURN ON POWER FROM MOTOR SHIELD TO TRACKS  ****/    
@@ -401,16 +527,16 @@ void SerialCommand::parse(char *com){
       else
         INTERFACE.print("<p0>");
 
-      for(int i=1;i<=MAX_MAIN_REGISTERS;i++){
-        if(mRegs->speedTable[i]==0)
+      for(int i=0;i<MAX_THROTTLES;i++){
+        if(speedTable[i]==0)
           continue;
         INTERFACE.print("<T");
-        INTERFACE.print(i); INTERFACE.print(" ");
-        if(mRegs->speedTable[i]>0){
-          INTERFACE.print(mRegs->speedTable[i]);
+        INTERFACE.print(i+1); INTERFACE.print(" ");
+        if(speedTable[i]>0){
+          INTERFACE.print(speedTable[i]);
           INTERFACE.print(" 1>");
         } else{
-          INTERFACE.print(-mRegs->speedTable[i]);
+          INTERFACE.print(-speedTable[i]);
           INTERFACE.print(" 0>");
         }          
       }
@@ -506,7 +632,7 @@ void SerialCommand::parse(char *com){
  *   
  *    returns: NONE   
  */
-      mRegs->writeTextPacket(com+1);
+//      mRegs->writeTextPacket(com+1);
       break;
 
 /***** WRITE A DCC PACKET TO ONE OF THE REGSITERS DRIVING THE MAIN OPERATIONS TRACK  ****/    
@@ -525,7 +651,7 @@ void SerialCommand::parse(char *com){
  *   
  *    returns: NONE   
  */
-      pRegs->writeTextPacket(com+1);
+//      pRegs->writeTextPacket(com+1);
       break;
             
 /***** ATTEMPTS TO DETERMINE HOW MUCH FREE SRAM IS AVAILABLE IN ARDUINO  ****/        
@@ -552,31 +678,166 @@ void SerialCommand::parse(char *com){
  *    lists the packet contents of the main operations track registers and the programming track registers
  *    FOR DIAGNOSTIC AND TESTING USE ONLY
  */
-      INTERFACE.println("");
-      for(Register *p=mRegs->reg;p<=mRegs->maxLoadedReg;p++){
-        INTERFACE.print("M"); INTERFACE.print((int)(p-mRegs->reg)); INTERFACE.print(":\t");
-        INTERFACE.print((int)p); INTERFACE.print("\t");
-        INTERFACE.print((int)p->activePacket); INTERFACE.print("\t");
-        INTERFACE.print(p->activePacket->nBits); INTERFACE.print("\t");
-        for(int i=0;i<10;i++){
-          INTERFACE.print(p->activePacket->buf[i],HEX); INTERFACE.print("\t");
-        }
-        INTERFACE.println("");
-      }
-      for(Register *p=pRegs->reg;p<=pRegs->maxLoadedReg;p++){
-        INTERFACE.print("P"); INTERFACE.print((int)(p-pRegs->reg)); INTERFACE.print(":\t");
-        INTERFACE.print((int)p); INTERFACE.print("\t");
-        INTERFACE.print((int)p->activePacket); INTERFACE.print("\t");
-        INTERFACE.print(p->activePacket->nBits); INTERFACE.print("\t");
-        for(int i=0;i<10;i++){
-          INTERFACE.print(p->activePacket->buf[i],HEX); INTERFACE.print("\t");
-        }
-        INTERFACE.println("");
-      }
-      INTERFACE.println("");
       break;
 
   } // switch
 }; // SerialCommand::parse
 
 ///////////////////////////////////////////////////////////////////////////////
+
+void SerialCommand::check_function() {
+	
+  for (int i=0; i < numfpins; i++) {
+    if (ftn_queue[i].inuse==1)  {
+
+    switch (MyCVs[ 30+(i*5) ]) {
+      case 0:
+        break;
+      case 1:
+	    ftn_queue[i].current_position = ftn_queue[i].current_position + ftn_queue[i].increment;
+        if (ftn_queue[i].current_position > ftn_queue[i].stop_value) {
+          ftn_queue[i].start_value = ~ftn_queue[i].start_value;
+          digitalWrite(fpins[i], ftn_queue[i].start_value);
+          ftn_queue[i].current_position = 0;
+          ftn_queue[i].stop_value = int(MyCVs[ 33+(i*5) ]);
+        }
+        break;
+      case 2:
+        {
+	  if (servo_slow_counter++ > servo_slowdown)
+	    {
+        ftn_queue[i].current_position = ftn_queue[i].current_position + ftn_queue[i].increment;
+	    if (ftn_queue[i].increment > 0) {
+	      if (ftn_queue[i].current_position > ftn_queue[i].stop_value) {
+		ftn_queue[i].current_position = ftn_queue[i].stop_value;
+                ftn_queue[i].inuse = 0;
+		servo[i].detach();
+              }
+            }
+	    if (ftn_queue[i].increment < 0) { 
+	      if (ftn_queue[i].current_position < ftn_queue[i].start_value) { 
+	        ftn_queue[i].current_position = ftn_queue[i].start_value;
+                ftn_queue[i].inuse = 0;
+		servo[i].detach();
+              }
+	    }
+            servo[i].write(ftn_queue[i].current_position);
+            servo_slow_counter = 0;
+	    }
+	   }
+        break;
+      case 3:
+	    ftn_queue[i].current_position = ftn_queue[i].current_position + ftn_queue[i].increment;
+        if (ftn_queue[i].current_position > ftn_queue[i].stop_value) {
+          ftn_queue[i].start_value = ~ftn_queue[i].start_value;
+          digitalWrite(fpins[i], ftn_queue[i].start_value);
+          digitalWrite(fpins[i]+1, ~ftn_queue[i].start_value);
+          ftn_queue[i].current_position = 0;
+          ftn_queue[i].stop_value = int(MyCVs[ 33+(i*5) ]);
+        }
+        i++;
+        break;
+       case 4:   // Simple Pulsed Output based on saved Rate =10*Rate in Milliseconds
+		 {
+		   ftn_queue[i].inuse = 0;
+		   ftn_queue[i].current_position = 0;
+           ftn_queue[i].increment = 10 * int (char (MyCVs[ 31+(i*5) ]));
+           digitalWrite(fpins[i], 0);
+		 }
+         break;
+	   case 5:   // Fade On
+
+         break;         
+       case 6:   // NEXT FEATURE to pin
+         break;         
+       default:
+         break;   
+      }
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void SerialCommand::exec_function (int function, int FuncState)  {
+  byte pin;
+  int servo_temp;
+  pin = fpins[function];
+  switch ( MyCVs[ 30+(function*5)] )  {  // Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+    case 0:    // On - Off LED
+      digitalWrite (pin, FuncState);
+      ftn_queue[function].inuse = 0;
+      break;
+    case 1:    // Blinking LED
+      if ((ftn_queue[function].inuse==0) && (FuncState==1))  {
+        ftn_queue[function].inuse = 1;
+        ftn_queue[function].start_value = 0;
+        digitalWrite(pin, 0);
+        ftn_queue[function].stop_value = int(MyCVs[ 33+(function*5) ]);
+      } else {
+          if ((ftn_queue[function].inuse==1) && (FuncState==0)) {
+            ftn_queue[function].inuse = 0;
+            digitalWrite(pin, 0);
+          }
+        }
+      break;
+    case 2:    // Servo
+      if (ftn_queue[function].inuse == 0)  {
+	    ftn_queue[function].inuse = 1;
+		servo[function].attach(pin);
+	  }
+      if (FuncState==1) ftn_queue[function].increment = char (MyCVs[ 31+(function*5) ]);
+        else ftn_queue[function].increment = - char(MyCVs[ 31+(function*5) ]);
+      if (FuncState==1) ftn_queue[function].stop_value = MyCVs[ 33+(function*5) ];
+        else ftn_queue[function].stop_value = MyCVs[ 32+(function*5) ];
+      break;
+    case 3:    // Blinking LED PAIR
+      if ((ftn_queue[function].inuse==0) && (FuncState==1))  {
+        ftn_queue[function].inuse = 1;
+        ftn_queue[function].start_value = 0;
+        digitalWrite(fpins[function], 0);
+        digitalWrite(fpins[function+1], 1);
+        ftn_queue[function].stop_value = int(MyCVs[ 33+(function*5) ]);
+      } else {
+          if (FuncState==0) {
+            ftn_queue[function].inuse = 0;
+            digitalWrite(fpins[function], 0);
+            digitalWrite(fpins[function+1], 0);
+          }
+        }
+      break;
+    case 4:    // Pulse Output based on Rate*10 Milliseconds
+      if ((ftn_queue[function].inuse==0) && (FuncState==1)) {  //First Turn On Detected
+        digitalWrite(fpins[function], 1);
+		delay (10*ftn_queue[function].increment);
+        digitalWrite(fpins[function], 0);
+		ftn_queue[function].inuse = 1;                    //inuse set to 1 says we already pulsed
+      } else 
+          if (FuncState==0)  ftn_queue[function].inuse = 0;
+      break;	  
+    case 5:    // Fade On
+#define fadedelay 24
+      if ((ftn_queue[function].inuse==0) && (FuncState==1))  {
+        ftn_queue[function].inuse = 1;
+        for (t=0; t<ftn_queue[function].stop_value; t+=ftn_queue[function].increment) {
+          digitalWrite( fpins[function], 1);
+          delay(fadedelay*(t/(1.*ftn_queue[function].stop_value)));
+          digitalWrite( fpins[function], 0);
+          delay(fadedelay-(fadedelay*(t/(1.*ftn_queue[function].stop_value))));
+        }
+        digitalWrite( fpins[function],  1 );
+      } else {
+          if ((ftn_queue[function].inuse==1) && (FuncState==0)) {
+            ftn_queue[function].inuse = 0;
+            digitalWrite(fpins[function], 0);
+          }
+        }
+      break;
+    case 6:    // Future Function
+      ftn_queue[function].inuse = 0;
+      break;
+    default:
+      ftn_queue[function].inuse = 0;
+      break;
+    }
+}

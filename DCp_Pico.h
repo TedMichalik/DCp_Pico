@@ -17,10 +17,10 @@ DCp_Pico.h
 // RELEASE VERSION
 /////////////////////////////////////////////////////////////////////////////////////
 
-#define VERSION "3.0.4"
+#define VERSION "3.1"
 
 /////////////////////////////////////////////////////////////////////////////////////
-// BOARD SETUP
+// BOARD SETUP - Pin numbers are Pico GP numbers, not physical pin numbers.
 /////////////////////////////////////////////////////////////////////////////////////
 
 #if defined  ARDUINO_RASPBERRY_PI_PICO
@@ -41,6 +41,11 @@ DCp_Pico.h
   #define IN3 21          // Direction (0 - Off/Reverse; 1 - Forward)
   #define IN4 22          // Direction (0 - Off/Forward; 1 - Reverse)
   #define CURRENT_MONITOR_PIN_PROG A1  // Need external circuit to measure current.
+  
+  //Function Pins
+  #define tim_delay 500
+  #define numfpins 12     // Pins 2 thru 13
+							//Note: Maximum value of 13 (pins 2 thru 14) without rewriting code.
 
 #else
 
@@ -63,25 +68,6 @@ DCp_Pico.h
   #error CANNOT COMPILE - DC+ FOR THE PICO CAN ONLY USE SERIAL COMMUNICATION - PLEASE SELECT THIS IN THE CONFIG FILE
 
 #endif
-
-/////////////////////////////////////////////////////////////////////////////////////
-// SET WHETHER TO SHOW PACKETS - DIAGNOSTIC MODE ONLY
-/////////////////////////////////////////////////////////////////////////////////////
-
-// If SHOW_PACKETS is set to 1, then for select main operations track commands that modify an internal DCC packet register,
-// if printFlag for that command is also set to 1, DCC++ BASE STATION will additionally return the 
-// DCC packet contents of the modified register in the following format:
-
-//    <* REG: B1 B2 ... Bn CSUM / REPEAT>
-//
-//    REG: the number of the main operations track packet register that was modified
-//    B1: the first hexidecimal byte of the DCC packet
-//    B2: the second hexidecimal byte of the DCC packet
-//    Bn: the nth hexidecimal byte of the DCC packet
-//    CSUM: a checksum byte that is required to be the final byte in any DCC packet
-//    REPEAT: the number of times the DCC packet was re-transmitted to the tracks after its iniital transmission
- 
-#define SHOW_PACKETS  1       // set to zero to disable printing of every packet for select main operations track commands
 
 /////////////////////////////////////////////////////////////////////////////////////
 

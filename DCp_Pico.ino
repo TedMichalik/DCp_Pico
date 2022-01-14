@@ -8,7 +8,6 @@
 // DC+ BASE STATION
 
 #include "DCp_Pico.h"
-#include "PacketRegister.h"
 #include "CurrentMonitor.h"
 #include "Sensor.h"
 #include "SerialCommand.h"
@@ -16,11 +15,8 @@
 #include "EEStore.h"
 #include "Config.h"
 
-// DECLARE GLOBAL OBJECTS TO PROCESS AND STORE DCC PACKETS AND MONITOR TRACK CURRENTS.
+// DECLARE GLOBAL OBJECTS TO MONITOR TRACK CURRENTS.
 // NOTE REGISTER LISTS MUST BE DECLARED WITH "VOLATILE" QUALIFIER TO ENSURE THEY ARE PROPERLY UPDATED BY INTERRUPT ROUTINES
-
-volatile RegisterList mainRegs(MAX_MAIN_REGISTERS);    // create list of registers for MAX_MAIN_REGISTER Main Track Packets
-volatile RegisterList progRegs(2);                     // create a shorter list of only two registers for Program Track Packets
 
 char msgA[5] = "<p2>";
 char msgB[5] = "<p3>";
@@ -30,6 +26,8 @@ CurrentMonitor progMonitor(CURRENT_MONITOR_PIN_PROG,msgB);  // create monitor fo
 bool track_power = true;  // global power indicator variable
 int toggle = HIGH;        // used to toggle the onboard LED
 int x = 0;                // used for frequency of toggle
+byte fpins [] = {2,3,4,5,6,7,8,9,10,11,12,13};  //Note: Maximum value of 13 (pins 2 thru 14) without rewriting code.
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // PRINT CONFIGURATION INFO TO UART SERIAL PORT
@@ -65,6 +63,8 @@ void setup() {
   Serial1.flush();
 #endif
 
+  SerialCommand::init(&mainMonitor);   // create structure to read and parse commands from serial line
+
   // TRACK A
   analogWrite(ENA, 0);    // Set speed to 0
   pinMode(IN1, OUTPUT);   // Both outputs LOW to stop
@@ -78,9 +78,25 @@ void setup() {
   pinMode(IN4, OUTPUT);
   digitalWrite(IN4, LOW);
 
+  int i;
+  uint8_t cv_value;
+// Initialize the Function pins as outputs
+  for (int i=0; i < numfpins; i++) {
+     pinMode(fpins[i], OUTPUT);
+     digitalWrite(fpins[i], 0);
+  }
+  for (int i=0; i < numfpins; i++) {
+     digitalWrite(fpins[i], 1);
+     delay (tim_delay/10);
+  }
+  delay( tim_delay);
+  for (int i=0; i < numfpins; i++) {
+     digitalWrite(fpins[i], 0);
+     delay (tim_delay/10);
+  }
+  delay( tim_delay);
+  
   EEStore::init();                                           // initialize and load Turnout and Sensor definitions stored in EEPROM
-
-  SerialCommand::init(&mainRegs, &progRegs, &mainMonitor);   // create structure to read and parse commands from serial line
 
 #ifdef DEBUG
   showConfiguration();
@@ -97,6 +113,8 @@ void loop() {
   if(CurrentMonitor::checkTime()){      // if sufficient time has elapsed since last update, check current draw on Main and Program Tracks 
     mainMonitor.check();
     progMonitor.check();
+	
+	SerialCommand::check_function();		// 
 
     if(++x > 100){
       digitalWrite(LED_BUILTIN, toggle);  // toggle the LED

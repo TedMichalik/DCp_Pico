@@ -30,17 +30,20 @@ boolean CurrentMonitor::checkTime(){
   
 void CurrentMonitor::check(){
   current=analogRead(pin)*CURRENT_SAMPLE_SMOOTHING+current*(1.0-CURRENT_SAMPLE_SMOOTHING);        // compute new exponentially-smoothed current
-  if(current>CURRENT_SAMPLE_MAX && track_power){                               // current overload
+if(current>CURRENT_SAMPLE_MAX && track_power){                               // current overload
+#ifdef DEBUG
+    Serial1.print("Current = ");
+    Serial1.print(current);
+    Serial1.print(" ");
+    Serial1.println(msg);
+	return;
+#endif
     digitalWrite(IN1,LOW);                                                     // disable both Motor Control Channels
     digitalWrite(IN2,LOW);                                                     // regardless of which caused current overload
     digitalWrite(IN3,LOW);
     digitalWrite(IN4,LOW);
     track_power = false;
     INTERFACE.print(msg);                                                      // print corresponding error message
-    Serial1.print("Current = ");
-    Serial1.print(current);
-    Serial1.print(" ");
-    Serial1.println(msg);
   }    
 } // CurrentMonitor::check  
 
