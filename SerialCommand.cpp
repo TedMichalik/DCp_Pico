@@ -87,7 +87,8 @@ void SerialCommand::process(){
 void SerialCommand::parse(char *com){
 
 #ifdef DEBUG
-  Serial1.println(com);
+  if(com[0] != 'f')
+    Serial1.println(com);
 #endif
 
   switch(com[0]){
@@ -414,12 +415,8 @@ void SerialCommand::parse(char *com){
           INTERFACE.print(" 0>");
         }          
       }
-      INTERFACE.print("<iDC+ V-");
+      INTERFACE.print("<iDCC-EX V-");
       INTERFACE.print(VERSION);
-      INTERFACE.print(" / ");
-      INTERFACE.print(ARDUINO_TYPE);
-      INTERFACE.print(" / ");
-      INTERFACE.print(MOTOR_SHIELD_NAME);
       INTERFACE.print(" G-");
       INTERFACE.print(__DATE__);
       INTERFACE.print(">");

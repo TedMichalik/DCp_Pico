@@ -91,8 +91,10 @@ void RegisterList::loadPacket(int nReg, byte *b, int nBytes, int nRepeat, int pr
   this->nRepeat=nRepeat;
   maxLoadedReg=max(maxLoadedReg,nextReg);
   
+#ifdef DEBUG
   if(printFlag && SHOW_PACKETS)       // for debugging purposes
     printPacket(nReg,b,nBytes,nRepeat);  
+#endif
 
 } // RegisterList::loadPacket
 
@@ -456,16 +458,16 @@ void RegisterList::writeCVBitMain(char *s) volatile{
 
 void RegisterList::printPacket(int nReg, byte *b, int nBytes, int nRepeat) volatile {
   
-  INTERFACE.print("<*");
-  INTERFACE.print(nReg);
-  INTERFACE.print(":");
+  Serial1.print("<*");
+  Serial1.print(nReg);
+  Serial1.print(":");
   for(int i=0;i<nBytes;i++){
-    INTERFACE.print(" ");
-    INTERFACE.print(b[i],HEX);
+    Serial1.print(" ");
+    Serial1.print(b[i],HEX);
   }
-  INTERFACE.print(" / ");
-  INTERFACE.print(nRepeat);
-  INTERFACE.print(">");
+  Serial1.print(" / ");
+  Serial1.print(nRepeat);
+  Serial1.print(">");
 } // RegisterList::printPacket()
 
 ///////////////////////////////////////////////////////////////////////////////

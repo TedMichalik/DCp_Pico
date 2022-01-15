@@ -13,7 +13,7 @@ Part of DCC++ BASE STATION for the Raspberry Pi Pico
 #include "Arduino.h"
 
 #define  CURRENT_SAMPLE_SMOOTHING   0.01
-#define  CURRENT_SAMPLE_MAX         800
+#define  CURRENT_SAMPLE_MAX         900
 #define  CURRENT_SAMPLE_TIME        10
 
 struct CurrentMonitor{
