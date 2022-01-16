@@ -14,10 +14,10 @@ DCp_Pico.h
 #define DCp_Pico_h
 
 /////////////////////////////////////////////////////////////////////////////////////
-// RELEASE VERSION
+// RELEASE VERSION - Based on latest DCC-EX CommandStation-EX
 /////////////////////////////////////////////////////////////////////////////////////
 
-#define VERSION "3.1"
+#define VERSION "3.2.0 rc11"
 
 /////////////////////////////////////////////////////////////////////////////////////
 // BOARD SETUP - Pin numbers are Pico GP numbers, not physical pin numbers.
@@ -68,6 +68,25 @@ DCp_Pico.h
   #error CANNOT COMPILE - DC+ FOR THE PICO CAN ONLY USE SERIAL COMMUNICATION - PLEASE SELECT THIS IN THE CONFIG FILE
 
 #endif
+
+/////////////////////////////////////////////////////////////////////////////////////
+// SET WHETHER TO SHOW PACKETS - DIAGNOSTIC MODE ONLY
+/////////////////////////////////////////////////////////////////////////////////////
+
+// If SHOW_PACKETS is set to 1, then for select main operations track commands that modify an internal DCC packet register,
+// if printFlag for that command is also set to 1, DCC++ BASE STATION will additionally return the 
+// DCC packet contents of the modified register in the following format:
+
+//    <* REG: B1 B2 ... Bn CSUM / REPEAT>
+//
+//    REG: the number of the main operations track packet register that was modified
+//    B1: the first hexidecimal byte of the DCC packet
+//    B2: the second hexidecimal byte of the DCC packet
+//    Bn: the nth hexidecimal byte of the DCC packet
+//    CSUM: a checksum byte that is required to be the final byte in any DCC packet
+//    REPEAT: the number of times the DCC packet was re-transmitted to the tracks after its iniital transmission
+ 
+#define SHOW_PACKETS  1       // set to zero to disable printing of every packet for select main operations track commands
 
 /////////////////////////////////////////////////////////////////////////////////////
 
