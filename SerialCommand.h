@@ -23,7 +23,6 @@ struct SerialCommand{
   static void parse(char *);
   static void process();
   static void check_function();
-  static void exec_function(int, int);
 }; // SerialCommand
 
 /////////////////////////////////////////////////////////////////////////////////////

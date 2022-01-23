@@ -26,8 +26,7 @@ CurrentMonitor progMonitor(CURRENT_MONITOR_PIN_PROG,msgB);  // create monitor fo
 bool track_power = true;  // global power indicator variable
 int toggle = HIGH;        // used to toggle the onboard LED
 int x = 0;                // used for frequency of toggle
-byte fpins [] = {2,3,4,5,6,7,8,9,10,11,12,13};  //Note: Maximum value of 13 (pins 2 thru 14) without rewriting code.
-
+int fpins [] = {F0pin,F1pin,F2pin,F3pin,F4pin,F5pin,F6pin,F7pin,F8pin,F9pin,F10pin,F11pin};
 
 ///////////////////////////////////////////////////////////////////////////////
 // PRINT CONFIGURATION INFO TO UART SERIAL PORT

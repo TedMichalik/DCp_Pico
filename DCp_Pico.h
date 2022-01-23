@@ -44,8 +44,21 @@ DCp_Pico.h
   
   //Function Pins
   #define tim_delay 500
-  #define numfpins 12     // Pins 2 thru 13
+  #define numfpins 12     // Pins 2 thru 13 (F0 - F11)
 							//Note: Maximum value of 13 (pins 2 thru 14) without rewriting code.
+  #define F0pin 2
+  #define F1pin 3
+  #define F2pin 4
+  #define F3pin 5
+  #define F4pin 6
+  #define F5pin 7
+  #define F6pin 8
+  #define F7pin 9
+  #define F8pin 10
+  #define F9pin 11
+  #define F10pin 12
+  #define F11pin 13
+  
 
 #else
 
@@ -68,25 +81,6 @@ DCp_Pico.h
   #error CANNOT COMPILE - DC+ FOR THE PICO CAN ONLY USE SERIAL COMMUNICATION - PLEASE SELECT THIS IN THE CONFIG FILE
 
 #endif
-
-/////////////////////////////////////////////////////////////////////////////////////
-// SET WHETHER TO SHOW PACKETS - DIAGNOSTIC MODE ONLY
-/////////////////////////////////////////////////////////////////////////////////////
-
-// If SHOW_PACKETS is set to 1, then for select main operations track commands that modify an internal DCC packet register,
-// if printFlag for that command is also set to 1, DCC++ BASE STATION will additionally return the 
-// DCC packet contents of the modified register in the following format:
-
-//    <* REG: B1 B2 ... Bn CSUM / REPEAT>
-//
-//    REG: the number of the main operations track packet register that was modified
-//    B1: the first hexidecimal byte of the DCC packet
-//    B2: the second hexidecimal byte of the DCC packet
-//    Bn: the nth hexidecimal byte of the DCC packet
-//    CSUM: a checksum byte that is required to be the final byte in any DCC packet
-//    REPEAT: the number of times the DCC packet was re-transmitted to the tracks after its iniital transmission
- 
-#define SHOW_PACKETS  1       // set to zero to disable printing of every packet for select main operations track commands
 
 /////////////////////////////////////////////////////////////////////////////////////
 
