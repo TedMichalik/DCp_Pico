@@ -65,14 +65,14 @@ void SerialCommand::init(CurrentMonitor *_mMonitor){
   
   // Initialize CVs
   MyCVs[30] = 2;  //F0 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[31] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[32] = 28;   //  Start Position F0=0
-  MyCVs[33] = 140;  //  End Position   F0=1
+  MyCVs[31] = 30;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[32] = 0;   //  Start Position F0=0
+  MyCVs[33] = 90;  //  End Position   F0=1
   MyCVs[34] = 28;   //  Current Position
   MyCVs[35] = 2;  //F1 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[36] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[37] = 28;   //  Start Position Fx=0
-  MyCVs[38] = 140;  //  End Position   Fx=1
+  MyCVs[36] = 30;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[37] = 0;   //  Start Position Fx=0
+  MyCVs[38] = 90;  //  End Position   Fx=1
   MyCVs[39] = 28;   //  Current Position
   MyCVs[40] = 2;  //F2 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
   MyCVs[41] = 1;    // Rate  Blink=Eate,Servo=Rate
