@@ -65,14 +65,14 @@ void SerialCommand::init(CurrentMonitor *_mMonitor){
   
   // Initialize CVs
   MyCVs[30] = 2;  //F0 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[31] = 30;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[31] = 10;    // Rate  Blink=Eate,Servo=Rate
   MyCVs[32] = 0;   //  Start Position F0=0
-  MyCVs[33] = 90;  //  End Position   F0=1
+  MyCVs[33] = 40;  //  End Position   F0=1
   MyCVs[34] = 28;   //  Current Position
   MyCVs[35] = 2;  //F1 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[36] = 30;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[36] = 10;    // Rate  Blink=Eate,Servo=Rate
   MyCVs[37] = 0;   //  Start Position Fx=0
-  MyCVs[38] = 90;  //  End Position   Fx=1
+  MyCVs[38] = 40;  //  End Position   Fx=1
   MyCVs[39] = 28;   //  Current Position
   MyCVs[40] = 2;  //F2 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
   MyCVs[41] = 1;    // Rate  Blink=Eate,Servo=Rate
@@ -146,8 +146,6 @@ for (int i=0; i < numfpins; i++) {
 void SerialCommand::process(){
   char c;
     
-  #if COMM_TYPE == 0
-
     while(INTERFACE.available()>0){    // while there is data on the serial line
      c=INTERFACE.read();
      if(c=='<')                    // start of new command
@@ -158,24 +156,6 @@ void SerialCommand::process(){
        sprintf(commandString,"%s%c",commandString,c);     // otherwise, character is ignored (but continue to look for '<' or '>')
     } // while
   
-  #elif COMM_TYPE == 1
-
-    EthernetClient client=INTERFACE.available();
-
-    if(client){
-      while(client.connected() && client.available()){        // while there is data on the network
-      c=client.read();
-      if(c=='<')                    // start of new command
-        sprintf(commandString,"");
-      else if(c=='>')               // end of new command
-        parse(commandString);                    
-      else if(strlen(commandString)<MAX_COMMAND_LENGTH)    // if comandString still has space, append character just read from network
-        sprintf(commandString,"%s%c",commandString,c);     // otherwise, character is ignored (but continue to look for '<' or '>')
-      } // while
-    }
-
-  #endif
-
 } // SerialCommand:process
    
 ///////////////////////////////////////////////////////////////////////////////
@@ -183,7 +163,7 @@ void SerialCommand::process(){
 void SerialCommand::parse(char *com){
 
 #ifdef DEBUG
-  Serial1.println(com);
+  DEBUG_OUT.println(com);
 #endif
 
   switch(com[0]){
@@ -285,16 +265,16 @@ void SerialCommand::parse(char *com){
     return;
 
 #ifdef DEBUG
-	 Serial1.print("fByte = ");
-	 Serial1.println(fByte, BIN);
+	 DEBUG_OUT.print("fByte = ");
+	 DEBUG_OUT.println(fByte, BIN);
 #endif
   NewFunctionState = 0;
   fungrp = (fByte & 0xE0);
   if(fungrp==0xC0) {
 	fungrp = fByte;
 #ifdef DEBUG
-	 Serial1.print("eByte = ");
-	 Serial1.println(eByte, BIN);
+	 DEBUG_OUT.print("eByte = ");
+	 DEBUG_OUT.println(eByte, BIN);
 #endif
   }
   
@@ -327,8 +307,8 @@ void SerialCommand::parse(char *com){
 	  break;
 	}
 #ifdef DEBUG
-	 Serial1.print("NewFunctionState = ");
-	 Serial1.println(NewFunctionState, BIN);
+	 DEBUG_OUT.print("NewFunctionState = ");
+	 DEBUG_OUT.println(NewFunctionState, BIN);
 #endif
     
   for (int i=startfn; i <= stopfn; i++) {
@@ -336,10 +316,10 @@ void SerialCommand::parse(char *com){
 	if(Bit_State != FunctionState[i]){
 		FunctionState[i] = Bit_State;
 #ifdef DEBUG
-	 Serial1.print("F");
-	 Serial1.print(i);
-	 Serial1.print(": Bit_State = ");
-	 Serial1.println(Bit_State);
+	 DEBUG_OUT.print("F");
+	 DEBUG_OUT.print(i);
+	 DEBUG_OUT.print(": Bit_State = ");
+	 DEBUG_OUT.println(Bit_State);
 #endif
 		if(i > numfpins) break; // Unprogrammed Function - Quit
   switch ( MyCVs[ 30+(i*5)] )  {  // Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
@@ -363,7 +343,7 @@ void SerialCommand::parse(char *com){
     case 2:    // Servo
       if (ftn_queue[i].inuse == 0)  {
 	    ftn_queue[i].inuse = 1;
-		servo[i].attach(fpins[i]);
+		servo[i].attach(fpins[i], 500, 2500);
 	  }
       if (Bit_State==1) ftn_queue[i].increment = char (MyCVs[ 31+(i*5) ]);
         else ftn_queue[i].increment = - char(MyCVs[ 31+(i*5) ]);
@@ -737,7 +717,7 @@ void SerialCommand::parse(char *com){
  *    SERIAL COMMUNICAITON WILL BE INTERUPTED ONCE THIS COMMAND IS ISSUED - MUST RESET BOARD OR RE-OPEN SERIAL WINDOW TO RE-ESTABLISH COMMS
  */
 
-    Serial.println("\nEntering Diagnostic Mode...");
+    INTERFACE.println("\nEntering Diagnostic Mode...");
     delay(1000);
     
     break;

@@ -71,14 +71,14 @@ DCp_Pico.h
 /////////////////////////////////////////////////////////////////////////////////////
 
 #if COMM_INTERFACE == 0
-
-  #define COMM_TYPE 0
+  // USB was selected
   #define INTERFACE Serial
+  #define DEBUG_OUT Serial1
 
 #else
-  // Serial was not selected
-
-  #error CANNOT COMPILE - DC+ FOR THE PICO CAN ONLY USE SERIAL COMMUNICATION - PLEASE SELECT THIS IN THE CONFIG FILE
+  // UART was selected
+  #define INTERFACE Serial1
+  #define DEBUG_OUT Serial
 
 #endif
 

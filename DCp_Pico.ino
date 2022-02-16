@@ -29,37 +29,17 @@ int x = 0;                // used for frequency of toggle
 int fpins [] = {F0pin,F1pin,F2pin,F3pin,F4pin,F5pin,F6pin,F7pin,F8pin,F9pin,F10pin,F11pin};
 
 ///////////////////////////////////////////////////////////////////////////////
-// PRINT CONFIGURATION INFO TO UART SERIAL PORT
-
-void showConfiguration(){
-
-  Serial1.print("<iDC+ BASE STATION FOR  ");      // Print Status to UART Serial Line to check configuration 
-  Serial1.print(ARDUINO_TYPE);
-  Serial1.print(" / ");
-  Serial1.print(MOTOR_SHIELD_NAME);
-  Serial1.print(": BUILD ");
-  Serial1.print(__DATE__);
-  Serial1.print(" ");
-  Serial1.print(__TIME__);
-  Serial1.print(">");
-  Serial1.print("<N");
-  Serial1.print(COMM_TYPE);
-  Serial1.print(": ");
-  Serial1.println("SERIAL>");
-} // showConfiguration
-
-///////////////////////////////////////////////////////////////////////////////
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
 
-  Serial.begin(115200);            // configure USB serial interface
-  Serial.flush();
+  INTERFACE.begin(115200);            // configure USB serial interface
+  INTERFACE.flush();
 
 #ifdef DEBUG
-  Serial1.begin(115200);           // Initialise UART 0
-  Serial1.flush();
+  DEBUG_OUT.begin(115200);           // Initialise UART 0
+  DEBUG_OUT.flush();
 #endif
 
   SerialCommand::init(&mainMonitor);   // create structure to read and parse commands from serial line
@@ -96,10 +76,6 @@ void setup() {
   delay( tim_delay);
   
   EEStore::init();                                           // initialize and load Turnout and Sensor definitions stored in EEPROM
-
-#ifdef DEBUG
-  showConfiguration();
-#endif
 
 } // setup
 
