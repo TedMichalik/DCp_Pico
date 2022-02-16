@@ -29,9 +29,9 @@ Config.h
 //  0 = Built-in USB Serial Port
 //  1 = Built-in UART Serial Port
 
-#define COMM_INTERFACE   0
+#define COMM_INTERFACE   1
 
 // ******** REMOVE THE "//" IN THE FOOLOWING LINE TO SEND DEBUGGING
 // ******** INFO TO THE UART SERIAL MONITOR
 
-#define DEBUG
+//#define DEBUG

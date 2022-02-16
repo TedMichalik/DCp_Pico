@@ -65,71 +65,58 @@ void SerialCommand::init(CurrentMonitor *_mMonitor){
   
   // Initialize CVs
   MyCVs[30] = 2;  //F0 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[31] = 10;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[31] = 2;    // Rate  Blink=Rate,Servo=Rate
   MyCVs[32] = 0;   //  Start Position F0=0
-  MyCVs[33] = 40;  //  End Position   F0=1
-  MyCVs[34] = 28;   //  Current Position
-  MyCVs[35] = 2;  //F1 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[36] = 10;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[37] = 0;   //  Start Position Fx=0
-  MyCVs[38] = 40;  //  End Position   Fx=1
-  MyCVs[39] = 28;   //  Current Position
-  MyCVs[40] = 2;  //F2 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[41] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[42] = 28;   //  Start Position Fx=0
-  MyCVs[43] = 140;  //  End Position   Fx=1
-  MyCVs[44] = 28;   //  Current Position
-  MyCVs[45] = 2;  //F3 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[46] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[47] = 28;   //  Start Position Fx=0
-  MyCVs[48] = 140;  //  End Position   Fx=1
-  MyCVs[49] = 28;   //  Current Position
-  MyCVs[50] = 0;  //F4 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[51] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[52] = 28;   //  Start Position Fx=0
-  MyCVs[53] = 140;  //  End Position   Fx=1
-  MyCVs[54] = 28;   //  Current Position
-  MyCVs[55] = 0;  //F5 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[56] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[57] = 28;   //  Start Position Fx=0
-  MyCVs[58] = 140;  //  End Position   Fx=1
-  MyCVs[59] = 28;   //  Current Position
-  MyCVs[60] = 0;  //F6 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[61] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[62] - 28;   //  Start Position Fx=0
-  MyCVs[63] = 140;  //  End Position   Fx=1
-  MyCVs[64] = 28;   //  Current Position
-  MyCVs[65] = 0;  //F7 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[66] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[67] = 28;   //  Start Position Fx=0
-  MyCVs[68] = 140;  //  End Position   Fx=1
-  MyCVs[69] = 28;   //  Current Position
-  MyCVs[70] = 1;  //F8 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[71] = 1;    // Rate  Blink=Eate,Servo=Rate
+  MyCVs[33] = 12;  //  End Position   F0=1
+  MyCVs[34] = 2;  //F1 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[35] = 2;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[36] = 0;   //  Start Position Fx=0
+  MyCVs[37] = 12;  //  End Position   Fx=1
+  MyCVs[38] = 2;  //F2 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[39] = 5;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[40] = 0;   //  Start Position Fx=0
+  MyCVs[41] = 180;  //  End Position   Fx=1
+  MyCVs[42] = 2;  //F3 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[43] = 5;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[44] = 0;   //  Start Position Fx=0
+  MyCVs[45] = 180;  //  End Position   Fx=1
+  MyCVs[46] = 0;  //F4 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[47] = 1;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[48] = 0;   //  Start Position Fx=0
+  MyCVs[49] = 180;  //  End Position   Fx=1
+  MyCVs[50] = 0;  //F5 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[51] = 1;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[52] = 0;   //  Start Position Fx=0
+  MyCVs[53] = 180;  //  End Position   Fx=1
+  MyCVs[54] = 0;  //F6 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[55] = 1;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[56] - 0;   //  Start Position Fx=0
+  MyCVs[57] = 180;  //  End Position   Fx=1
+  MyCVs[58] = 0;  //F7 Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[59] = 1;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[60] = 0;   //  Start Position Fx=0
+  MyCVs[61] = 180;  //  End Position   Fx=1
+  MyCVs[62] = 1;  //F8 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[63] = 1;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[64] = 1;    //  Start Position Fx=0
+  MyCVs[65] = 50;   //  End Position   Fx=1
+  MyCVs[66] = 1;  //F9 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[67] = 1;    // Rate  Blink=Rate,Servo=Rate
+  MyCVs[68] = 1;    //  Start Position Fx=0
+  MyCVs[69] = 50;   //  End Position   Fx=1
+  MyCVs[70] = 3;  //F10 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[71] = 1;    // Rate  Blink=Rate,PWM=Rate,Servo=Rate
   MyCVs[72] = 1;    //  Start Position Fx=0
   MyCVs[73] = 50;   //  End Position   Fx=1
-  MyCVs[74] = 1;    //  Current Position
-  MyCVs[75] = 1;  //F9 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[76] = 1;    // Rate  Blink=Eate,Servo=Rate
-  MyCVs[77] = 1;    //  Start Position Fx=0
-  MyCVs[78] = 50;   //  End Position   Fx=1
-  MyCVs[79] = 1;    //  Current Position
-  MyCVs[80] = 3;  //F10 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[81] = 1;    // Rate  Blink=Eate,PWM=Rate,Servo=Rate
-  MyCVs[82] = 1;    //  Start Position Fx=0
-  MyCVs[83] = 50;   //  End Position   Fx=1
-  MyCVs[84] = 20;   //  Current Position
-  MyCVs[85] = 0;  //F11 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[86] = 1;    // Rate  Blink=Eate,PWM=Rate,Servo=Rate
-  MyCVs[87] = 1;    //  Start Position Fx=0
-  MyCVs[88] = 50;    //  End Position   Fx=1
-  MyCVs[89] = 1;    //  Current Position
+  MyCVs[74] = 0;  //F11 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[75] = 1;    // Rate  Blink=Rate,PWM=Rate,Servo=Rate
+  MyCVs[76] = 1;    //  Start Position Fx=0
+  MyCVs[77] = 50;    //  End Position   Fx=1
 //FUTURE USE
-  MyCVs[90] = 0;  //F12 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
-  MyCVs[91] = 1;    // Rate  Blink=Eate,PWM=Rate,Servo=Rate
-  MyCVs[92] = 1;    //  Start Position Fx=0
-  MyCVs[93] = 4;    //  End Position   Fx=1
-  MyCVs[94] = 1;    //  Current Position
+  MyCVs[78] = 0;  //F12 Config  0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  MyCVs[79] = 1;    // Rate  Blink=Rate,PWM=Rate,Servo=Rate
+  MyCVs[80] = 1;    //  Start Position Fx=0
+  MyCVs[81] = 4;    //  End Position   Fx=1
 
 // Initialize Function Queue
 for (int i=0; i < numfpins; i++) {
@@ -264,18 +251,10 @@ void SerialCommand::parse(char *com){
   if(sscanf(com+1,"%d %d %d",&cab,&fByte,&eByte)<2)
     return;
 
-#ifdef DEBUG
-	 DEBUG_OUT.print("fByte = ");
-	 DEBUG_OUT.println(fByte, BIN);
-#endif
   NewFunctionState = 0;
   fungrp = (fByte & 0xE0);
   if(fungrp==0xC0) {
 	fungrp = fByte;
-#ifdef DEBUG
-	 DEBUG_OUT.print("eByte = ");
-	 DEBUG_OUT.println(eByte, BIN);
-#endif
   }
   
   switch(fungrp){
@@ -306,23 +285,13 @@ void SerialCommand::parse(char *com){
 	  stopfn = 28;
 	  break;
 	}
-#ifdef DEBUG
-	 DEBUG_OUT.print("NewFunctionState = ");
-	 DEBUG_OUT.println(NewFunctionState, BIN);
-#endif
     
   for (int i=startfn; i <= stopfn; i++) {
 	Bit_State = (NewFunctionState>>i & 0x01);
 	if(Bit_State != FunctionState[i]){
 		FunctionState[i] = Bit_State;
-#ifdef DEBUG
-	 DEBUG_OUT.print("F");
-	 DEBUG_OUT.print(i);
-	 DEBUG_OUT.print(": Bit_State = ");
-	 DEBUG_OUT.println(Bit_State);
-#endif
 		if(i > numfpins) break; // Unprogrammed Function - Quit
-  switch ( MyCVs[ 30+(i*5)] )  {  // Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
+  switch ( MyCVs[ 30+(i*4)] )  {  // Config 0=On/Off,1=Blink,2=Servo,3=DBL LED Blink,4=Pulsed,5=fade
     case 0:    // On - Off LED
       digitalWrite (fpins[i], Bit_State);
       ftn_queue[i].inuse = 0;
@@ -330,9 +299,9 @@ void SerialCommand::parse(char *com){
     case 1:    // Blinking LED
       if (Bit_State)  { // ON
         ftn_queue[i].inuse = 1;
-        ftn_queue[i].increment = int(MyCVs[ 31+(i*5) ]);
-        ftn_queue[i].start_value = int(MyCVs[ 32+(i*5) ]);
-        ftn_queue[i].stop_value = int(MyCVs[ 33+(i*5) ]);
+        ftn_queue[i].increment = int(MyCVs[ 31+(i*4) ]);
+        ftn_queue[i].start_value = int(MyCVs[ 32+(i*4) ]);
+        ftn_queue[i].stop_value = int(MyCVs[ 33+(i*4) ]);
         digitalWrite(fpins[i], ftn_queue[i].start_value);
         ftn_queue[i].current_position = 0;
       } else { //OFF
@@ -345,17 +314,17 @@ void SerialCommand::parse(char *com){
 	    ftn_queue[i].inuse = 1;
 		servo[i].attach(fpins[i], 500, 2500);
 	  }
-      if (Bit_State==1) ftn_queue[i].increment = char (MyCVs[ 31+(i*5) ]);
-        else ftn_queue[i].increment = - char(MyCVs[ 31+(i*5) ]);
-      if (Bit_State==1) ftn_queue[i].stop_value = MyCVs[ 33+(i*5) ];
-        else ftn_queue[i].stop_value = MyCVs[ 32+(i*5) ];
+      if (Bit_State==1) ftn_queue[i].increment = char (MyCVs[ 31+(i*4) ]);
+        else ftn_queue[i].increment = - char(MyCVs[ 31+(i*4) ]);
+      if (Bit_State==1) ftn_queue[i].stop_value = MyCVs[ 33+(i*4) ];
+        else ftn_queue[i].stop_value = MyCVs[ 32+(i*4) ];
       break;
     case 3:    // Blinking LED PAIR
       if (Bit_State)  { // ON
         ftn_queue[i].inuse = 1;
-        ftn_queue[i].increment = int(MyCVs[ 31+(i*5) ]);
-        ftn_queue[i].start_value = int(MyCVs[ 32+(i*5) ]);
-        ftn_queue[i].stop_value = int(MyCVs[ 33+(i*5) ]);
+        ftn_queue[i].increment = int(MyCVs[ 31+(i*4) ]);
+        ftn_queue[i].start_value = int(MyCVs[ 32+(i*4) ]);
+        ftn_queue[i].stop_value = int(MyCVs[ 33+(i*4) ]);
         digitalWrite(fpins[i], ftn_queue[i].start_value);
         digitalWrite(fpins[i+1], (1-ftn_queue[i].start_value));
         ftn_queue[i].current_position = 0;
@@ -796,7 +765,7 @@ void SerialCommand::check_function() {
   for (int i=0; i < numfpins; i++) {
     if (ftn_queue[i].inuse==1)  {
 
-    switch (MyCVs[ 30+(i*5) ]) {
+    switch (MyCVs[ 30+(i*4) ]) {
       case 0:
         break;
       case 1:
@@ -845,7 +814,7 @@ void SerialCommand::check_function() {
 		 {
 		   ftn_queue[i].inuse = 0;
 		   ftn_queue[i].current_position = 0;
-           ftn_queue[i].increment = 10 * int (char (MyCVs[ 31+(i*5) ]));
+           ftn_queue[i].increment = 10 * int (char (MyCVs[ 31+(i*4) ]));
            digitalWrite(fpins[i], 0);
 		 }
          break;
