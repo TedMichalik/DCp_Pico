@@ -1,7 +1,7 @@
 /**********************************************************************
 SerialCommand.cpp
   Part of DC+ BASE STATION for the Raspberry Pi Pico
-  Ted Michalik 2022
+  Ted Michalik 2023
   
   A derivative work of
   Geoff Bunza 2019  Rev 2.1
@@ -126,7 +126,7 @@ for (int i=0; i < numfpins; i++) {
 	ftn_queue[i].stop_value = 0;
 	ftn_queue[i].start_value = 0;
 }
-} // SerialCommand:SerialCommand
+} // SerialCommand:init
 
 ///////////////////////////////////////////////////////////////////////////////
 
