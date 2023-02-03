@@ -252,8 +252,8 @@ void SerialCommand::parse(char *com){
     return;
 
   NewFunctionState = 0;
-  fungrp = (fByte & 0xE0);
-  if(fungrp==0xC0) {
+  fungrp = (fByte & 0xF0);
+  if(fungrp>0xC0) {
 	fungrp = fByte;
   }
   
