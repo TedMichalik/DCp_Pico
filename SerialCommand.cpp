@@ -258,7 +258,8 @@ void SerialCommand::parse(char *com){
   }
   
   switch(fungrp){
-	case 0x80:                      // this is a request for functions FL,F1-F4
+	case 0x90:			// this is a request for functions FL (F0)
+	case 0x80:                      // this is a request for functions F1-F4
 	  NewFunctionState = NewFunctionState + (fByte & 0x10)>>4;		// FL (F0)
 	  NewFunctionState = NewFunctionState + (fByte & 0x0F)*2;	//F1-F4
 	  startfn = 0;
